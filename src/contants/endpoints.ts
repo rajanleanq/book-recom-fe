@@ -10,6 +10,16 @@ export const endpoints = {
     logout: "/logout",
     authSuccess: "/auth/success",
   },
+  admin: {
+    login:"/admin/login",
+    addBook: "/admin/book/add",
+    deleteBook: (id: string | number) => "/admin/book/delete/" + id,
+    editBook: "/admin/book/edit",
+    getUser: "/admin/users",
+    getAllBooks: (page?: string, limit?: string): string => {
+      return "/books" + `?page=${page}&limit=${limit}`;
+    },
+  },
   book: {
     checkIfBookIsInList: "/list/",
     getBooksRecommendation: (bookId?: string | number): string =>
@@ -34,11 +44,24 @@ export const endpoints = {
     },
     getBookById: (id: number | string): string => "/books/" + id,
     getSavedList: (id: number | string): string => "/list/" + id,
-    getUserRatingOnBook: ({ userId, bookId, page_number }: GetBookRatingInterface) =>
+    getUserRatingOnBook: ({
+      userId,
+      bookId,
+      page_number,
+    }: GetBookRatingInterface) =>
       `/ratings/${userId}/${bookId}?page=${page_number}&limit=5`,
+    deleteUserRatingOnBook: `/ratings/remove`,
     addBookToList: "/list/add-book",
     addRatingToBook: "/ratings/add",
-    removeBookFromList: ({ user_id, book_id }: { user_id: string; book_id: string }) =>
-      "/list/" + user_id + "/" + book_id,
+    recommendBook: "/books/related?limit=1000",
+    listRecommendation: "/books/recommendations/list",
+    cosineSimilarityBooks: "/books/related/cosineSimilarity",
+    removeBookFromList: ({
+      user_id,
+      book_id,
+    }: {
+      user_id: string;
+      book_id: string;
+    }) => "/list/" + user_id + "/" + book_id,
   },
 };

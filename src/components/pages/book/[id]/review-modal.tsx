@@ -1,21 +1,32 @@
 "use client";
-import React, { useState } from "react";
-import { Form, Modal, message } from "antd";
 import Rating from "@/components/common/rating/rating";
-import TextArea from "antd/es/input/TextArea";
-import { useAddRatingToBookMutation } from "@/store/features/ratings/rating.api";
-import { getCookie } from "cookies-next";
-import { useSearchParams } from "next/navigation";
 import { getUser } from "@/lib/getUser";
+import { useAddRatingToBookMutation } from "@/store/features/ratings/rating.api";
+import { setRatingData } from "@/store/features/user-info/user-info.slice";
+import { Form, Modal, message } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 interface ModalProps {
   isModalOpen: boolean;
   handleCancel: () => void;
+  currentUserReview: string;
+  currentUserRating: number;
+  refetch: any;
 }
-export default function ReviewModal({ isModalOpen, handleCancel }: ModalProps) {
-  const [rate, setRate] = useState<number>(0);
+export default function ReviewModal({
+  isModalOpen,
+  handleCancel,
+  currentUserRating,
+  currentUserReview,
+  refetch,
+}: ModalProps) {
+  const dispatch = useDispatch();
+  const [rate, setRate] = useState<number>(currentUserRating);
   const searchParams = useSearchParams();
-  const [bookReview, setBookReview] = useState<string>("");
+  const [bookReview, setBookReview] = useState<string>(currentUserReview);
   const [messageApi, contextHolder] = message.useMessage();
   const [reviewMutation] = useAddRatingToBookMutation();
   const handleReview = async () => {
@@ -26,9 +37,16 @@ export default function ReviewModal({ isModalOpen, handleCancel }: ModalProps) {
       rating: rate,
       review: bookReview,
     });
+    dispatch(
+      setRatingData({
+        rate,
+        review: bookReview,
+      })
+    );
     handleCancel();
-    window.location.reload();
+    refetch();
   };
+
   return (
     <Modal
       centered

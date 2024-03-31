@@ -7,25 +7,20 @@ import {
   useGetBooksQuery,
 } from "@/store/features/book/book.api";
 import Image from "next/image";
-import { useSelector } from "react-redux";
 import * as Yup from "yup";
 import BookCard from "./book-card";
 import { useRouter } from "next-nprogress-bar";
+import { getUser } from "@/lib/getUser";
+import BookRecommendations from "./book-recommendations/book-recommendations";
 
 const validationSchema = Yup.object({
   search: Yup.string().required("Please enter search text"),
 });
 export default function BookComponent() {
-  const user_data = useSelector((state: any) => state?.userInfo?.userInfo);
-
-  const {
-    data,
-    refetch,
-    isLoading: isSearchBookLoading,
-  } = useGetBooksQuery({});
+  const { data, isLoading: isSearchBookLoading } = useGetBooksQuery({});
   const { data: recommendedBooks, isLoading: isRecommendationLoading } =
     useGetBookRecommendationsQuery({
-      id: user_data?.userId,
+      id: getUser()?.userId?.toString(),
     });
   const router = useRouter();
   return (
@@ -71,26 +66,8 @@ export default function BookComponent() {
           btnClick={() => router.push("/books/collection")}
         />
       </center>
-      <SectionTitle text="Our Recommendations" className="text-h4" />
-      <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {!isRecommendationLoading
-          ? recommendedBooks?.data?.map((p: any, index: number) => (
-              <BookCard
-                key={index + "recommend"}
-                title={p?.title}
-                rating={p?.average_rating}
-                image={p?.image_url}
-                author={p?.authors}
-                language={p?.language_code}
-                date={p?.original_publication_year}
-                id={p?._id}
-                bookId={p?.id}
-              />
-            ))
-          : Array.from({ length: 4 }).map((_, index) => (
-              <BookSkeletal key={index} />
-            ))}
-      </div>
+
+      <BookRecommendations />
     </div>
   );
 }

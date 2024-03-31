@@ -17,6 +17,7 @@ import { LoginFormInterface } from "@/store/features/auth/auth.interface";
 import { setCookie } from "cookies-next";
 import { session } from "@/contants/token";
 import { useRouter } from "next-nprogress-bar";
+import { useToast } from "@/lib/toast/useToast";
 
 const validationSchema = Yup.object({
   username: Yup.string().required("User name is required"),
@@ -24,6 +25,7 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
+  const toast = useToast();
   const [loginApiCall] = useLoginMutation();
   const { data: tokenData } = useGetTokenQuery();
   const navigate = useRouter();
@@ -42,9 +44,27 @@ const LoginForm = () => {
     validationSchema: validationSchema,
 
     onSubmit: async (values: LoginFormInterface) => {
-      const response = await loginApiCall(values);
-      if (response.error?.status !== 400) {
-        window.location.reload();
+      try {
+        const response = await loginApiCall(values);
+        if (response?.error?.status !== 400) {
+          window.location.reload();
+          toast({
+            type: "success",
+            title: "Logged in successfully",
+          });
+          // window.location.reload();
+        } else {
+          toast({
+            type: "error",
+            title: response.error?.data?.message,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        toast({
+          type: "error",
+          title: "Invalid credentials",
+        });
       }
     },
   });

@@ -1,17 +1,23 @@
 "use client";
 import BookSkeletal from "@/components/common/BookSkeletal/BookSkeletal";
 import ButtonComponent from "@/components/common/button/button";
-import { useGetSavedBooksQuery } from "@/store/features/book/book.api";
+import {
+  useGetSavedBooksQuery,
+  useListRelatedBooksMutation,
+} from "@/store/features/book/book.api";
 import Image from "next/image";
 import BookCard from "../../book/book-card";
 import { useRouter } from "next-nprogress-bar";
 import { getUser } from "@/lib/getUser";
+import SectionTitle from "@/components/common/text/section-title";
+import { useEffect, useState } from "react";
 
 export default function SaveBookComponent() {
   const { data, isLoading } = useGetSavedBooksQuery({
     id: getUser()?.userId,
   });
   const router = useRouter();
+  const [getRelatedBook] = useListRelatedBooksMutation();
   return (
     <div className="px-20 py-10 flex flex-col gap-10 flex-1">
       <p className="text-2xl text-blue-900 font-bold">
