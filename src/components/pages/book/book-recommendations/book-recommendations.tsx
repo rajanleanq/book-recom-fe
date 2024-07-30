@@ -1,14 +1,14 @@
 import SectionTitle from "@/components/common/text/section-title";
+import { routes } from "@/contants/routes";
 import { getUser } from "@/lib/getUser";
 import {
   useCosineSimilarityRecommendationMutation,
   useGetSavedBooksQuery,
   useListRelatedBooksMutation,
 } from "@/store/features/book/book.api";
-import React, { useEffect, useState } from "react";
-import BookCard from "../book-card";
 import Link from "next/link";
-import { routes } from "@/contants/routes";
+import { useEffect, useState } from "react";
+import BookCard from "../book-card";
 
 export default function BookRecommendations() {
   const { data, isLoading } = useGetSavedBooksQuery({
@@ -17,11 +17,11 @@ export default function BookRecommendations() {
   const [getRelatedBook] = useListRelatedBooksMutation();
   const [cosineSimilarityRelatedBooks] =
     useCosineSimilarityRecommendationMutation();
-  const [relatedJaccardBooks, setRelatedJaccardBooks] = useState(null);
+  const [relatedJaccardBooks, setRelatedJaccardBooks] = useState<any>(null);
   const [loadingJaccard, setLoadingJaccard] = useState<boolean>(false);
   const [loadingCosineSimilarity, setLoadingCosineSimilarity] =
     useState<boolean>(false);
-  const [relatedCosineBooks, setRelatedCosineBooks] = useState(null);
+  const [relatedCosineBooks, setRelatedCosineBooks] = useState<any>(null);
 
   useEffect(() => {
     setLoadingJaccard(true);
@@ -47,7 +47,7 @@ export default function BookRecommendations() {
             list: data?.books,
           });
           setLoadingCosineSimilarity(false);
-          setRelatedCosineBooks(response?.data?.list?.data?.slice(1, 11));
+          setRelatedCosineBooks(response?.data?.list?.data);
         } catch (error) {
           console.error("Error fetching related books:", error);
           setLoadingCosineSimilarity(false);
